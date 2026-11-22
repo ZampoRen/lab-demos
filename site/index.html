@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>深场 DEEP FIELD · 云间天文台</title>
+<style>
+  :root{--bg:#030507;--ice:#9ff3ff;--steel:#cfd6dd;--dim:#7b8891;--line:rgba(159,243,255,.18)}
+  *{box-sizing:border-box;margin:0;padding:0}
+  html{scroll-behavior:smooth}
+  body{background:var(--bg);color:var(--steel);font-family:"Helvetica Neue","PingFang SC",Arial,sans-serif;overflow-x:hidden}
+  .mono{font-family:"SF Mono",Menlo,monospace;font-size:9.5px;letter-spacing:.16em;color:rgba(159,243,255,.72)}
+  /* 固定 HUD */
+  .hud{position:fixed;inset:26px 34px;pointer-events:none;z-index:20}
+  .hud .corner{position:absolute;width:26px;height:26px;border:1px solid rgba(159,243,255,.45)}
+  .hud .tl{left:0;top:0;border-right:0;border-bottom:0}
+  .hud .tr{right:0;top:0;border-left:0;border-bottom:0}
+  .hud .bl{left:0;bottom:0;border-right:0;border-top:0}
+  .hud .br{right:0;bottom:0;border-left:0;border-top:0}
+  .grain{position:fixed;inset:0;pointer-events:none;z-index:19;opacity:.2;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>")}
+  .scan{position:fixed;inset:0;pointer-events:none;z-index:18;opacity:.22;
+    background:repeating-linear-gradient(0deg,rgba(0,0,0,.4) 0 1px,rgba(0,0,0,0) 1px 3px)}
+  /* 顶栏 */
+  nav{position:absolute;top:0;left:0;right:0;z-index:6;display:flex;justify-content:space-between;align-items:center;
+    padding:40px 52px}
+  nav .brand{font-size:11px;letter-spacing:.3em;color:var(--steel)}
+  nav .brand b{color:#fff;font-weight:600}
+  nav .links{display:flex;gap:30px;font-size:10.5px;letter-spacing:.2em;color:var(--dim)}
+  nav .links a{color:inherit;text-decoration:none}
+  nav .links a:hover{color:var(--ice)}
+  /* 首屏 */
+  .hero{position:relative;height:100vh;min-height:680px;overflow:hidden}
+  .hero .sky{position:absolute;inset:-8%;background:url("../assets/carina-large.jpg") center/cover;
+    filter:saturate(.4) contrast(1.32) brightness(.63) hue-rotate(168deg);opacity:.78;
+    animation:drift 26s ease-in-out infinite alternate}
+  @keyframes drift{from{transform:scale(1.02) translate3d(-1%,0,0)}to{transform:scale(1.08) translate3d(1.5%,-1%,0)}}
+  .hero .veil{position:absolute;inset:0;
+    background:radial-gradient(120% 90% at 50% 42%,rgba(3,5,7,0) 0%,rgba(3,5,7,.55) 58%,rgba(3,5,7,.94) 100%),
+               linear-gradient(180deg,rgba(3,5,7,.9),rgba(3,5,7,.1) 32%,rgba(3,5,7,.92))}
+  .hero .grid-line{position:absolute;background:rgba(159,243,255,.14)}
+  .hero .v1{left:8%;top:0;bottom:0;width:1px}
+  .hero .v2{right:8%;top:0;bottom:0;width:1px}
+  .hero .ring{position:absolute;left:50%;top:50%;width:min(60vh,600px);height:min(60vh,600px);
+    transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;
+    background:conic-gradient(from 0deg,rgba(159,243,255,0) 0deg,rgba(159,243,255,.45) 22deg,rgba(159,243,255,0) 46deg,
+      rgba(159,243,255,0) 180deg,rgba(159,243,255,.26) 205deg,rgba(159,243,255,0) 232deg);
+    -webkit-mask:radial-gradient(circle,transparent 69.4%,#000 69.8%,#000 70.4%,transparent 70.8%);
+    mask:radial-gradient(circle,transparent 69.4%,#000 69.8%,#000 70.4%,transparent 70.8%);
+    animation:spin 38s linear infinite;opacity:.75}
+  @keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+  .core{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;
+    text-align:center;z-index:4;padding:0 24px}
+  .zh{font-family:"Songti SC",serif;font-size:15px;letter-spacing:1.1em;color:rgba(207,214,221,.75);margin-bottom:22px;text-indent:1.1em}
+  .chrome{position:relative;font-size:clamp(56px,10vw,150px);line-height:.9;font-weight:800;letter-spacing:.02em;
+    background:linear-gradient(178deg,#f4f9ff 4%,#b9c6d2 22%,#5d6a76 42%,#eef6ff 53%,#8e9aa6 66%,#2c343c 84%,#dfeaf5 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 2px 24px rgba(159,243,255,.12))}
+  .chrome small{display:block;font-size:15px;letter-spacing:.46em;font-weight:500;margin-top:20px;
+    color:rgba(159,243,255,.86);background:none;-webkit-text-fill-color:rgba(159,243,255,.86)}
+  .ghost{position:absolute;inset:0;font-size:inherit;font-weight:800;letter-spacing:inherit;line-height:inherit;
+    color:transparent;-webkit-text-stroke:1px rgba(159,243,255,.3);pointer-events:none}
+  .ghost.g1{transform:translate(-3px,2px);-webkit-text-stroke-color:rgba(255,60,120,.28)}
+  .ghost.g2{transform:translate(3px,-2px);-webkit-text-stroke-color:rgba(159,243,255,.28)}
+  .tagline{margin-top:30px;font-size:12.5px;letter-spacing:.34em;color:rgba(207,214,221,.72)}
+  .tagline b{color:var(--ice);font-weight:500}
+  .hero .topmeta{position:absolute;top:104px;left:52px;right:52px;display:flex;justify-content:space-between;z-index:5}
+  .hero .bottom{position:absolute;left:52px;right:52px;bottom:38px;z-index:5;
+    display:flex;justify-content:space-between;align-items:flex-end;gap:24px}
+  .stats{display:flex;gap:38px}
+  .stats div{font-family:"SF Mono",Menlo,monospace;font-size:9.5px;letter-spacing:.14em;color:#9aa8b1;line-height:1.9}
+  .stats b{display:block;font-family:"Helvetica Neue",sans-serif;font-size:15px;letter-spacing:.06em;color:#eef4f8;font-weight:500}
+  .enter{border:1px solid rgba(159,243,255,.55);padding:13px 26px;color:var(--ice);font-size:11.5px;
+    letter-spacing:.3em;text-decoration:none;background:rgba(159,243,255,.05);transition:.25s}
+  .enter:hover{background:rgba(159,243,255,.16);box-shadow:0 0 30px rgba(159,243,255,.15)}
+  .scroll-hint{position:absolute;left:50%;bottom:18px;transform:translateX(-50%);z-index:5;
+    font-family:"SF Mono",monospace;font-size:8.5px;letter-spacing:.4em;color:rgba(159,243,255,.5)}
+  /* 通用段 */
+  section{position:relative;padding:130px 8vw}
+  .sec-label{display:flex;align-items:center;gap:16px;margin-bottom:44px}
+  .sec-label span{font-family:"SF Mono",monospace;font-size:9.5px;letter-spacing:.3em;color:var(--ice);white-space:nowrap}
+  .sec-label i{flex:1;height:1px;background:var(--line)}
+  /* 序 */
+  .intro{background:#05070a;border-top:1px solid rgba(159,243,255,.08)}
+  .intro .quote{font-family:"Songti SC",serif;font-size:clamp(26px,3.6vw,50px);line-height:1.62;
+    letter-spacing:.04em;max-width:19em;color:#e7ecf1;font-weight:400}
+  .intro .quote em{font-style:normal;color:var(--ice)}
+  .intro .cols{display:grid;grid-template-columns:1fr 1fr;gap:8vw;margin-top:74px}
+  .intro p{font-size:15px;line-height:2.1;color:#b6c0c7;max-width:30em}
+  .intro .spec{font-family:"SF Mono",monospace;font-size:11px;line-height:2.1;color:#93a0a8;letter-spacing:.06em}
+  .intro .spec b{color:var(--steel);font-weight:500}
+  /* 作品墙 */
+  .works{background:#030507}
+  .works .head{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:56px}
+  .works h2{font-size:clamp(30px,3.4vw,46px);font-weight:600;letter-spacing:.02em}
+  .works .head p{font-size:12.5px;color:var(--dim);max-width:24em;line-height:2;text-align:right}
+  .wall{display:grid;grid-template-columns:repeat(12,1fr);gap:26px 26px}
+  .work{position:relative;overflow:hidden;background:#000;border:1px solid rgba(159,243,255,.12)}
+  .work img{width:100%;display:block;filter:saturate(.85) contrast(1.08) brightness(.92);
+    transition:transform .8s cubic-bezier(.2,.7,.2,1),filter .8s}
+  .work:hover img{transform:scale(1.04);filter:saturate(1.05) contrast(1.12) brightness(1)}
+  .work .cap{position:absolute;left:0;right:0;bottom:0;padding:44px 22px 18px;display:flex;justify-content:space-between;
+    background:linear-gradient(0deg,rgba(3,5,7,.92),rgba(3,5,7,0));
+    font-family:"SF Mono",monospace;font-size:9px;letter-spacing:.16em;color:rgba(207,214,221,.8)}
+  .work .n{position:absolute;top:16px;left:18px;font-family:"SF Mono",monospace;font-size:10px;
+    letter-spacing:.2em;color:var(--ice)}
+  .w1{grid-column:1/8;grid-row:1/3}
+  .w2{grid-column:8/13;grid-row:1}
+  .w3{grid-column:8/13;grid-row:2}
+  .w1 img{height:100%;min-height:520px;object-fit:cover}
+  .w2 img,.w3 img{height:250px;object-fit:cover}
+  .works .note{margin-top:26px;font-size:11px;color:#93a0a8;letter-spacing:.05em}
+  /* 暗房 */
+  .darkroom{position:relative;min-height:78vh;display:flex;align-items:center;overflow:hidden;border-top:1px solid rgba(159,243,255,.08)}
+  .darkroom .bg{position:absolute;inset:0;background:url("../assets/southern_ring_nebula.jpg") center/cover;
+    filter:saturate(.22) contrast(1.4) brightness(.34) hue-rotate(160deg)}
+  .darkroom .mask{position:absolute;inset:0;background:linear-gradient(90deg,#030507 6%,rgba(3,5,7,.86) 38%,rgba(3,5,7,.25) 72%,rgba(3,5,7,.7))}
+  .darkroom .inner{position:relative;z-index:2;padding:0 8vw;max-width:760px}
+  .darkroom h3{font-size:clamp(28px,3.2vw,44px);font-weight:600;line-height:1.35;margin:18px 0 22px}
+  .darkroom p{font-size:15px;line-height:2.05;color:#b6c0c7;max-width:30em}
+  .darkroom .sessions{display:flex;gap:40px;margin-top:38px;font-family:"SF Mono",monospace;font-size:10px;color:#8c9aa3}
+  .darkroom .sessions b{display:block;font-family:"Helvetica Neue",sans-serif;font-size:20px;color:#eef4f8;font-weight:400;margin-bottom:4px}
+  /* 参观 */
+  .visit{background:#05070a;border-top:1px solid rgba(159,243,255,.08)}
+  .visit .grid{display:grid;grid-template-columns:1.2fr 1fr;gap:8vw;align-items:start}
+  .visit h3{font-size:clamp(26px,3vw,40px);line-height:1.3;font-weight:600;margin-bottom:26px}
+  .visit p{font-size:15px;line-height:2.05;color:#b6c0c7;max-width:28em}
+  .visit .rows{border-top:1px solid var(--line)}
+  .visit .row{display:flex;justify-content:space-between;gap:20px;padding:16px 0;border-bottom:1px solid var(--line);
+    font-size:12px;color:#8f9ba4}
+  .visit .row b{color:#e7ecf1;font-weight:500;font-size:12.5px}
+  .visit .cta{display:inline-block;margin-top:36px;border:1px solid rgba(159,243,255,.55);padding:15px 34px;
+    color:var(--ice);font-size:11.5px;letter-spacing:.32em;text-decoration:none;background:rgba(159,243,255,.05)}
+  .visit .cta:hover{background:rgba(159,243,255,.16)}
+  footer{padding:54px 8vw 40px;background:#020304;border-top:1px solid rgba(159,243,255,.08);
+    display:flex;justify-content:space-between;gap:20px;font-family:"SF Mono",monospace;
+    font-size:9.5px;letter-spacing:.12em;color:#8b98a1}
+  @media (max-width:900px){
+    nav{padding:22px 20px}
+    nav .links{display:none}
+    .hero .topmeta{left:20px;right:20px;top:76px;font-size:8.5px}
+    .hero .topmeta span:first-child{display:none}
+    .hero .topmeta span:last-child{color:rgba(159,243,255,.5)}
+    .hero .v1,.hero .v2{display:none}
+    .chrome{font-size:56px}
+    .chrome small{font-size:12px;letter-spacing:.3em}
+    .tagline{font-size:10.5px;letter-spacing:.16em;margin-top:22px;line-height:2}
+    .hero .bottom{left:20px;right:20px;bottom:26px;flex-direction:column;align-items:flex-start;gap:14px}
+    .stats{gap:22px}
+    .scroll-hint{display:none}
+    .hud{inset:12px 14px}
+    section{padding:80px 20px}
+    .intro .quote{font-size:26px}
+    .intro .cols{grid-template-columns:1fr;gap:36px;margin-top:44px}
+    .works .head{flex-direction:column;align-items:flex-start;gap:14px}
+    .works .head p{text-align:left}
+    .wall{grid-template-columns:1fr;gap:18px}
+    .w1,.w2,.w3{grid-column:1;grid-row:auto}
+    .w1 img{min-height:0;height:300px}
+    .w2 img,.w3 img{height:220px}
+    .darkroom{padding:80px 0}
+    .darkroom .inner{padding:0 20px}
+    .visit .grid{grid-template-columns:1fr;gap:40px}
+    footer{flex-direction:column;padding:36px 20px}
+  }
+</style>
+</head>
+<body>
+<div class="hud"><i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i></div>
+<div class="scan"></div>
+<div class="grain"></div>
+
+<nav>
+  <div class="brand"><b>云间天文台</b>　YUNJIAN OBSERVATORY</div>
+  <div class="links">
+    <a href="#intro">序</a><a href="#works">影像</a><a href="#darkroom">暗房</a><a href="#visit">参观</a>
+  </div>
+</nav>
+
+<header class="hero">
+  <div class="sky"></div><div class="veil"></div>
+  <div class="grid-line v1"></div><div class="grid-line v2"></div>
+  <div class="ring"></div>
+  <div class="topmeta mono">
+    <span>● LIVE FEED / DEEP FIELD</span>
+    <span>2027.03.21—06.20　31.05°N 121.92°E</span>
+  </div>
+  <div class="core">
+    <div class="zh">深 场</div>
+    <h1 class="chrome">
+      <span class="ghost g1">DEEP FIELD</span>
+      <span class="ghost g2">DEEP FIELD</span>
+      DEEP FIELD
+      <small>134 亿年前的光</small>
+    </h1>
+    <p class="tagline">十二幅深空影像　·　一间暗房　·　<b>一次向外的回望</b></p>
+  </div>
+  <div class="bottom">
+    <div class="stats mono">
+      <div><b>12</b>FRAMES</div>
+      <div><b>7.7H</b>EXPOSURE</div>
+      <div><b>−58°</b>DECLINATION</div>
+      <div><b>3</b>HALL</div>
+    </div>
+    <a class="enter" href="#works">ENTER THE DARK →</a>
+  </div>
+  <div class="scroll-hint">SCROLL</div>
+</header>
+
+<section class="intro" id="intro">
+  <div class="sec-label"><span>00 / 序</span><i></i></div>
+  <p class="quote">我们抬头看到的星光，<br>有一些在人类出现之前就出发了。<em>深场，是把这件事做成一面墙。</em></p>
+  <div class="cols">
+    <p>展览只做一件事：按光的出发时间排序。第一幅最近，最后一幅在 134 亿年前。你沿着墙走，其实是在往回走。每幅影像下面只有三个数字——目标编号、曝光时长、光走了多久。没有解说词，没有背景音乐。</p>
+    <div class="spec">
+      <b>DEEP FIELD / 2027</b><br>
+      Curation — 云间天文台 策展组<br>
+      Imaging — JWST NIRCam / MIRI<br>
+      Data — NASA / ESA / CSA<br>
+      Print — 哑光绢纸，四色 + 专银<br>
+      Edition — 首批 12 幅，逐幅编号
+    </div>
+  </div>
+</section>
+
+<section class="works" id="works">
+  <div class="sec-label"><span>01 / 影像</span><i></i></div>
+  <div class="head">
+    <h2>先公开三幅</h2>
+    <p>其余九幅只在暗房开放。<br>现场不看屏幕，所有影像按原始比例输出。</p>
+  </div>
+  <div class="wall">
+    <figure class="work w1">
+      <span class="n">01</span>
+      <img src="../assets/carina-large.jpg" alt="船底座星云">
+      <figcaption class="cap"><span>船底座星云 · 宇宙悬崖</span><span>7.7H / 7,600 LY</span></figcaption>
+    </figure>
+    <figure class="work w2">
+      <span class="n">02</span>
+      <img src="../assets/southern_ring_nebula.jpg" alt="南环星云">
+      <figcaption class="cap"><span>南环星云</span><span>MIRI / 2,500 LY</span></figcaption>
+    </figure>
+    <figure class="work w3">
+      <span class="n">03</span>
+      <img src="../assets/PIA04201.jpg" alt="斯蒂芬五重奏">
+      <figcaption class="cap"><span>斯蒂芬五重奏</span><span>IRAC / 290 M LY</span></figcaption>
+    </figure>
+  </div>
+  <p class="note">影像版权归 NASA / ESA / CSA 所有，展览输出经公共领域授权。</p>
+</section>
+
+<section class="darkroom" id="darkroom">
+  <div class="bg"></div><div class="mask"></div>
+  <div class="inner">
+    <div class="mono">02 / 暗房</div>
+    <h3>进去之后，<br>眼睛需要二十分钟适应。</h3>
+    <p>暗房每天只开两场，每场四十分钟。入场后不再说话，手机留在门外。第一幅影像在正前方，亮度调到刚好能看见轮廓。第二十分钟，你会开始看见边缘的星点——那不是屏幕变亮了，是眼睛变了。</p>
+    <div class="sessions">
+      <div><b>19:00</b>第一场</div>
+      <div><b>20:00</b>第二场</div>
+      <div><b>40 min</b>单场时长</div>
+    </div>
+  </div>
+</section>
+
+<section class="visit" id="visit">
+  <div class="sec-label"><span>03 / 参观</span><i></i></div>
+  <div class="grid">
+    <div>
+      <h3>来的时候，<br>带一件薄外套。</h3>
+      <p>展厅恒温 19°C。暗房门口有寄存柜，包和手机都要留下。不建议带小孩，八岁以下无法进入暗房。</p>
+      <a class="cta" href="#">预约入夜 →</a>
+    </div>
+    <div class="rows">
+      <div class="row"><span>展期</span><b>2027.03.21 — 06.20</b></div>
+      <div class="row"><span>开放</span><b>周二至周日 10:00—21:00</b></div>
+      <div class="row"><span>地址</span><b>临港 · 环湖西三路 1 号</b></div>
+      <div class="row"><span>暗房</span><b>每日 19:00 / 20:00</b></div>
+      <div class="row"><span>票务</span><b>现场与线上同价</b></div>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <span>DEEP FIELD / YUNJIAN OBSERVATORY</span>
+  <span>DESIGNED WITH HUASHU-DESIGN v3.4.2</span>
+</footer>
+</body>
+</html>

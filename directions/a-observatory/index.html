@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>深场 DEEP FIELD · 暗场天文馆</title>
+<style>
+  :root{
+    --ink:#efe9dc; --dim:#8d887e; --line:rgba(239,233,220,.22);
+    --gold:#c9a227; --bg:#050608;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{background:var(--bg);color:var(--ink);font-family:"Songti SC","Times New Roman",serif;overflow:hidden}
+  .stage{position:relative;display:grid;grid-template-columns:46% 54%;height:100vh;min-height:640px}
+  /* 左栏 */
+  .panel{position:relative;padding:44px 56px 40px;display:flex;flex-direction:column;z-index:2}
+  .topbar{display:flex;justify-content:space-between;align-items:baseline;
+    font-family:"PingFang SC",-apple-system,sans-serif;font-size:11px;letter-spacing:.22em;color:var(--dim)}
+  .topbar b{color:var(--ink);font-weight:500}
+  .main{margin-top:auto}
+  .eyebrow{font-family:"PingFang SC",sans-serif;font-size:11px;letter-spacing:.42em;color:var(--gold)}
+  h1{font-size:clamp(96px,11.4vw,176px);line-height:.92;font-weight:400;letter-spacing:.06em;margin:18px 0 10px}
+  .en{font-family:"Times New Roman",Georgia,serif;font-size:clamp(18px,1.9vw,26px);
+    letter-spacing:.52em;color:var(--ink);text-transform:uppercase}
+  .rule{height:1px;background:var(--line);margin:34px 0 22px}
+  .meta{display:flex;gap:40px;font-family:"PingFang SC",sans-serif;font-size:12.5px;line-height:2;color:var(--dim)}
+  .meta b{display:block;color:var(--ink);font-weight:400;font-size:13.5px;letter-spacing:.05em}
+  .cta{margin-top:38px;display:inline-flex;align-items:center;gap:14px;
+    font-family:"PingFang SC",sans-serif;font-size:13px;letter-spacing:.18em;color:var(--ink);
+    border-bottom:1px solid var(--gold);padding-bottom:8px;width:max-content}
+  .cta span{color:var(--gold);font-family:"Times New Roman",serif}
+  .foot{position:absolute;left:56px;bottom:22px;font-family:"PingFang SC",sans-serif;
+    font-size:10px;letter-spacing:.3em;color:#5d5a53}
+  /* 右栏 */
+  .visual{position:relative;overflow:hidden;background:#000}
+  .visual img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;
+    object-position:58% 40%;filter:saturate(.86) contrast(1.06) brightness(.94);transform:scale(1.04)}
+  .visual::after{content:"";position:absolute;inset:0;
+    background:linear-gradient(90deg,#050608 0%,rgba(5,6,8,.72) 7%,rgba(5,6,8,0) 34%),
+               linear-gradient(0deg,rgba(5,6,8,.75) 0%,rgba(5,6,8,0) 32%)}
+  .cross{position:absolute;left:62%;top:31%;width:1px;height:1px;z-index:3}
+  .cross::before,.cross::after{content:"";position:absolute;background:rgba(239,233,220,.65)}
+  .cross::before{width:56px;height:1px;left:-28px;top:0}
+  .cross::after{width:1px;height:56px;left:0;top:-28px}
+  .cross i{position:absolute;left:16px;top:-22px;font-style:normal;
+    font-family:"PingFang SC",sans-serif;font-size:9.5px;letter-spacing:.16em;color:rgba(239,233,220,.9);
+    white-space:nowrap;text-shadow:0 1px 6px rgba(0,0,0,.85)}
+  .coord{position:absolute;right:40px;bottom:34px;z-index:3;text-align:right;
+    font-family:"SF Mono",Menlo,monospace;font-size:9.5px;line-height:2;letter-spacing:.08em;
+    color:rgba(239,233,220,.55);writing-mode:vertical-rl}
+  .caption{position:absolute;left:38px;bottom:26px;z-index:3;
+    font-family:"PingFang SC",sans-serif;font-size:10px;letter-spacing:.24em;color:rgba(239,233,220,.58)}
+  .grain{position:fixed;inset:0;pointer-events:none;z-index:9;opacity:.16;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='140'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2'/></filter><rect width='140' height='140' filter='url(%23n)' opacity='.5'/></svg>")}
+  @media (max-width:760px){
+    .stage{grid-template-columns:1fr;grid-template-rows:58vh auto;height:auto;min-height:100vh}
+    .visual{order:1}
+    .panel{order:2;padding:30px 24px 46px}
+    h1{font-size:64px;margin:12px 0 8px}
+    .en{font-size:14px;letter-spacing:.38em}
+    .rule{margin:22px 0 16px}
+    .meta{gap:22px;font-size:11.5px}
+    .cta{margin-top:26px;font-size:12px}
+    .foot{display:none}
+  }
+</style>
+</head>
+<body>
+<div class="stage">
+  <section class="panel">
+    <div class="topbar">
+      <span><b>云间天文台</b>　YUNJIAN OBSERVATORY</span>
+      <span>2027.03.21 — 06.20</span>
+    </div>
+    <div class="main">
+      <div class="eyebrow">深空影像展 / 第一回</div>
+      <h1>深场</h1>
+      <div class="en">Deep Field</div>
+      <div class="rule"></div>
+      <div class="meta">
+        <div><b>十二幅</b>韦伯望远镜影像</div>
+        <div><b>一间</b>可过夜的暗房</div>
+        <div><b>134 亿年</b>前的光</div>
+      </div>
+      <a class="cta" href="#">预约入夜 <span>→</span></a>
+    </div>
+    <div class="foot">临港 · 云间天文台 3 号展厅</div>
+  </section>
+  <section class="visual">
+    <img src="../../assets/carina-large.jpg" alt="船底座星云，詹姆斯·韦伯空间望远镜 NIRCam 影像">
+    <div class="cross"><i>NGC 3324</i></div>
+    <div class="coord">RA 10h 36m 58s<br>DEC −58° 52′ 12″<br>EXPOSURE 7.7 H</div>
+    <div class="caption">船底座星云 · 宇宙悬崖 · 韦伯 NIRCam</div>
+  </section>
+</div>
+<div class="grain"></div>
+</body>
+</html>
