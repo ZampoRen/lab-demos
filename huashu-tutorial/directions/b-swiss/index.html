@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>深场 DEEP FIELD · 瑞士科学海报</title>
+<style>
+  :root{
+    --paper:#ece7db; --ink:#121210; --red:#cd3a24; --grey:#6f6a5f; --hair:#1a1a17;
+  }
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--paper);color:var(--ink);
+    font-family:"Helvetica Neue","PingFang SC",Arial,sans-serif;overflow:hidden}
+  .sheet{position:relative;height:100vh;min-height:640px;padding:34px 48px 30px;
+    display:grid;grid-template-columns:repeat(12,1fr);grid-template-rows:auto 1fr auto;gap:0 20px}
+  .paper-grain{position:fixed;inset:0;pointer-events:none;z-index:5;opacity:.5;mix-blend-mode:multiply;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='120' height='120'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.75' numOctaves='3'/></filter><rect width='120' height='120' filter='url(%23n)' opacity='.22'/></svg>")}
+  /* 顶栏 */
+  .top{grid-column:1/13;display:flex;justify-content:space-between;align-items:baseline;
+    border-bottom:1px solid var(--hair);padding-bottom:12px;font-size:11px;letter-spacing:.18em}
+  .top .org{font-weight:700}
+  .top .no{color:var(--grey)}
+  /* 主区 */
+  .title{grid-column:1/7;grid-row:2;align-self:start;padding-top:44px}
+  .kicker{font-size:11px;letter-spacing:.36em;color:var(--red);font-weight:700}
+  h1{font-size:clamp(120px,15.5vw,236px);line-height:.86;letter-spacing:.02em;margin-top:16px;font-weight:700}
+  .latin{margin-top:18px;font-size:clamp(15px,1.5vw,21px);letter-spacing:.46em;font-weight:500}
+  .lede{margin-top:26px;max-width:30em;font-size:13px;line-height:1.95;color:#3b382f}
+  .index{margin-top:36px}
+  .index .idx-head{font-size:9.5px;letter-spacing:.3em;color:var(--red);border-bottom:1px solid var(--hair);padding-bottom:6px}
+  .index ol{list-style:none;margin-top:10px;columns:2;column-gap:34px}
+  .index li{font-size:11px;line-height:2.35;color:#4a463c;display:flex;gap:10px;break-inside:avoid}
+  .index li i{font-style:normal;font-family:"SF Mono",Menlo,monospace;font-size:9px;color:var(--grey);width:16px;flex:none;padding-top:2px}
+  .figure{grid-column:8/13;grid-row:2;align-self:start;padding-top:44px;position:relative}
+  .figure img{width:100%;height:min(53vh,520px);object-fit:cover;filter:grayscale(1) contrast(1.22) brightness(.92);
+    display:block}
+  .figure .bar{height:7px;background:var(--red);width:26%;margin-top:10px}
+  .figure figcaption{margin-top:9px;font-family:"SF Mono",Menlo,monospace;font-size:9.5px;
+    letter-spacing:.08em;color:var(--grey);display:flex;justify-content:space-between}
+  /* 大数字 */
+  .number{grid-column:1/6;grid-row:3;display:flex;align-items:flex-end;gap:14px;padding-bottom:8px}
+  .number b{font-size:clamp(84px,10vw,150px);line-height:.8;font-weight:700;letter-spacing:-.03em}
+  .number span{font-size:13px;line-height:1.7;padding-bottom:6px}
+  .number span em{display:block;font-style:normal;color:var(--grey);font-size:10px;letter-spacing:.2em}
+  /* 数据栏 */
+  .data{grid-column:6/13;grid-row:3;align-self:end;border-top:1px solid var(--hair);padding-top:12px;
+    display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+  .data div{font-size:10.5px;line-height:1.8;color:var(--grey);letter-spacing:.06em}
+  .data b{display:block;color:var(--ink);font-size:12.5px;letter-spacing:.04em;font-weight:700;margin-bottom:2px}
+  .seal{position:absolute;right:48px;top:50%;transform:rotate(90deg);transform-origin:right top;
+    font-size:10px;letter-spacing:.5em;color:var(--grey)}
+  @media (max-width:760px){
+    .sheet{height:auto;min-height:100vh;padding:22px 20px 30px;grid-template-columns:1fr;grid-template-rows:auto}
+    .top{flex-direction:column;gap:6px;font-size:10px}
+    .title{grid-column:1;grid-row:auto;padding-top:26px}
+    h1{font-size:96px}
+    .latin{font-size:13px;letter-spacing:.32em}
+    .lede{font-size:12.5px;margin-top:18px}
+    .figure{grid-column:1;grid-row:auto;padding-top:22px}
+    .figure img{height:240px}
+    .number{grid-column:1;grid-row:auto;margin-top:22px}
+    .number b{font-size:88px}
+    .data{grid-column:1;grid-row:auto;margin-top:20px;grid-template-columns:repeat(2,1fr)}
+    .seal{display:none}
+  }
+</style>
+</head>
+<body>
+<div class="sheet">
+  <div class="top">
+    <span class="org">云间天文台　YUNJIAN OBSERVATORY</span>
+    <span class="no">展 览 第 一 回　/　DEEP FIELD　/　2027</span>
+  </div>
+
+  <div class="title">
+    <div class="kicker">深空影像展</div>
+    <h1>深场</h1>
+    <div class="latin">D E E P &nbsp; F I E L D</div>
+    <p class="lede">十二幅韦伯望远镜影像，按拍摄距离由近及远悬挂。走到最后一幅，你看到的是宇宙刚学会发光的时候。</p>
+    <div class="index">
+      <div class="idx-head">影像目录 / 01—12</div>
+      <ol>
+        <li><i>01</i>船底座星云 · 宇宙悬崖</li>
+        <li><i>02</i>南环星云</li>
+        <li><i>03</i>斯蒂芬五重奏</li>
+        <li><i>04</i>WASP-96 b 大气光谱</li>
+        <li><i>05</i>SMACS 0723 星系团</li>
+        <li><i>06</i>木星与极光</li>
+        <li><i>07</i>海王星环</li>
+        <li><i>08</i>创生之柱</li>
+        <li><i>09</i>车轮星系</li>
+        <li><i>10</i>潘多拉星系团</li>
+        <li><i>11</i>狼蛛星云</li>
+        <li><i>12</i>GN-z11 · 134 亿年前</li>
+      </ol>
+    </div>
+  </div>
+
+  <figure class="figure">
+    <img src="../../assets/carina-large.jpg" alt="船底座星云，詹姆斯·韦伯空间望远镜 NIRCam 影像">
+    <div class="bar"></div>
+    <figcaption><span>NGC 3324 / CARINA</span><span>NIRCam · 7.7H</span></figcaption>
+  </figure>
+
+  <div class="number">
+    <b>134</b>
+    <span><em>亿年</em>最早一幅影像<br>所记录的光</span>
+  </div>
+
+  <div class="data">
+    <div><b>2027.03.21—06.20</b>周二至周日 10:00—21:00</div>
+    <div><b>云间天文台 3 号展厅</b>临港 · 环湖西三路 1 号</div>
+    <div><b>暗房场次</b>每日 19:00 / 20:00 各一场</div>
+    <div><b>票务</b>现场与线上同价，学生半价</div>
+  </div>
+</div>
+<div class="paper-grain"></div>
+</body>
+</html>

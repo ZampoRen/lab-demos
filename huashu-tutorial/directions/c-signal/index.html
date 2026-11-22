@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>深场 DEEP FIELD · 夜间信号</title>
+<style>
+  :root{--bg:#030507;--ice:#9ff3ff;--steel:#cfd6dd;--dim:#6d7a82}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:var(--bg);color:var(--steel);overflow:hidden;
+    font-family:"Helvetica Neue","PingFang SC",Arial,sans-serif}
+  .stage{position:relative;height:100vh;min-height:640px;overflow:hidden}
+  .sky{position:absolute;inset:-8%;background:url("../../assets/carina-large.jpg") center/cover;
+    filter:saturate(.35) contrast(1.35) brightness(.55) hue-rotate(168deg);opacity:.72;
+    animation:drift 24s ease-in-out infinite alternate}
+  @keyframes drift{from{transform:scale(1.02) translate3d(-1%,0,0)}to{transform:scale(1.08) translate3d(1.5%,-1%,0)}}
+  .veil{position:absolute;inset:0;
+    background:radial-gradient(120% 90% at 50% 42%,rgba(3,5,7,0) 0%,rgba(3,5,7,.55) 58%,rgba(3,5,7,.94) 100%),
+               linear-gradient(180deg,rgba(3,5,7,.85),rgba(3,5,7,.15) 30%,rgba(3,5,7,.9))}
+  .scan{position:absolute;inset:0;pointer-events:none;opacity:.35;
+    background:repeating-linear-gradient(0deg,rgba(0,0,0,.35) 0 1px,rgba(0,0,0,0) 1px 3px)}
+  .grain{position:absolute;inset:0;pointer-events:none;opacity:.22;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>")}
+  /* HUD 框 */
+  .grid-line{position:absolute;background:rgba(159,243,255,.16)}
+  .grid-line.v1{left:8%;top:0;bottom:0;width:1px}
+  .grid-line.v2{right:8%;top:0;bottom:0;width:1px}
+  .grid-line.h1{left:0;right:0;top:16%;height:1px}
+  .hud{position:absolute;inset:26px 34px;pointer-events:none}
+  .hud .corner{position:absolute;width:26px;height:26px;border:1px solid rgba(159,243,255,.5)}
+  .hud .tl{left:0;top:0;border-right:0;border-bottom:0}
+  .hud .tr{right:0;top:0;border-left:0;border-bottom:0}
+  .hud .bl{left:0;bottom:0;border-right:0;border-top:0}
+  .hud .br{right:0;bottom:0;border-left:0;border-top:0}
+  .mono{font-family:"SF Mono",Menlo,monospace;font-size:9.5px;letter-spacing:.16em;color:rgba(159,243,255,.72)}
+  .topmeta{position:absolute;top:40px;left:52px;right:52px;display:flex;justify-content:space-between;z-index:4}
+  .blink::before{content:"●";color:var(--ice);margin-right:7px;animation:blink 1.6s steps(1) infinite}
+  @keyframes blink{50%{opacity:.15}}
+  /* 中央 */
+  .core{position:absolute;inset:0;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;z-index:3}
+  .zh{font-family:"Songti SC",serif;font-size:15px;letter-spacing:1.1em;color:rgba(207,214,221,.75);margin-bottom:22px;text-indent:1.1em}
+  .chrome{position:relative;font-size:clamp(64px,10.2vw,150px);line-height:.9;font-weight:800;letter-spacing:.02em;
+    background:linear-gradient(178deg,#f4f9ff 4%,#b9c6d2 22%,#5d6a76 42%,#eef6ff 53%,#8e9aa6 66%,#2c343c 84%,#dfeaf5 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 2px 24px rgba(159,243,255,.12))}
+  .chrome small{display:block;font-size:15px;letter-spacing:.46em;font-weight:500;margin-top:20px;
+    color:rgba(159,243,255,.86);background:none;-webkit-text-fill-color:rgba(159,243,255,.86)}
+  .ghost{position:absolute;inset:0;font-size:inherit;font-weight:800;letter-spacing:inherit;line-height:inherit;
+    color:transparent;-webkit-text-stroke:1px rgba(159,243,255,.35)}
+  .ghost.g1{transform:translate(-3px,2px);-webkit-text-stroke-color:rgba(255,60,120,.3)}
+  .ghost.g2{transform:translate(3px,-2px);-webkit-text-stroke-color:rgba(159,243,255,.3)}
+  .tagline{margin-top:30px;font-size:12.5px;letter-spacing:.34em;color:rgba(207,214,221,.72)}
+  .tagline b{color:var(--ice);font-weight:500}
+  .ring{position:absolute;left:50%;top:50%;width:min(58vh,560px);height:min(58vh,560px);
+    transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;
+    background:conic-gradient(from 0deg,rgba(159,243,255,0) 0deg,rgba(159,243,255,.45) 22deg,rgba(159,243,255,0) 46deg,
+      rgba(159,243,255,0) 180deg,rgba(159,243,255,.28) 205deg,rgba(159,243,255,0) 232deg);
+    -webkit-mask:radial-gradient(circle,transparent 69.4%,#000 69.8%,#000 70.4%,transparent 70.8%);
+    mask:radial-gradient(circle,transparent 69.4%,#000 69.8%,#000 70.4%,transparent 70.8%);
+    animation:spin 38s linear infinite;opacity:.8}
+  @keyframes spin{to{transform:translate(-50%,-50%) rotate(360deg)}}
+  /* 底部数据 */
+  .bottom{position:absolute;left:52px;right:52px;bottom:38px;z-index:4;
+    display:flex;justify-content:space-between;align-items:flex-end;gap:24px}
+  .stats{display:flex;gap:38px}
+  .stats div{font-family:"SF Mono",Menlo,monospace;font-size:9.5px;letter-spacing:.14em;color:#9aa8b1;line-height:1.9}
+  .stats b{display:block;font-family:"Helvetica Neue",sans-serif;font-size:15px;letter-spacing:.06em;color:#eef4f8;font-weight:500}
+  .enter{border:1px solid rgba(159,243,255,.55);padding:13px 26px;color:var(--ice);font-size:11.5px;
+    letter-spacing:.3em;text-decoration:none;background:rgba(159,243,255,.05)}
+  .enter:hover{background:rgba(159,243,255,.14)}
+  .side{position:absolute;left:52px;top:50%;transform:translateY(-50%) rotate(180deg);writing-mode:vertical-rl;
+    font-family:"SF Mono",Menlo,monospace;font-size:9px;letter-spacing:.36em;color:rgba(109,122,130,.75);z-index:4}
+  @media (max-width:760px){
+    .stage{height:auto;min-height:100vh}
+    .topmeta{left:20px;right:20px;top:20px}
+    .core{padding:0 20px;min-height:100vh}
+    .chrome{font-size:56px}
+    .chrome small{font-size:20px;letter-spacing:.3em}
+    .tagline{font-size:11px;letter-spacing:.2em;margin-top:22px;line-height:2}
+    .bottom{left:20px;right:20px;bottom:24px;flex-direction:column;align-items:flex-start;gap:16px}
+    .stats{gap:22px}
+    .side,.ring{display:none}
+    .hud{inset:14px 16px}
+  }
+</style>
+</head>
+<body>
+<div class="stage">
+  <div class="sky"></div>
+  <div class="veil"></div>
+  <div class="ring"></div>
+  <div class="scan"></div>
+  <div class="grid-line v1"></div><div class="grid-line v2"></div><div class="grid-line h1"></div>
+  <div class="hud"><i class="corner tl"></i><i class="corner tr"></i><i class="corner bl"></i><i class="corner br"></i></div>
+
+  <div class="topmeta mono">
+    <span class="blink">LIVE FEED / YUNJIAN OBSERVATORY</span>
+    <span>2027.03.21—06.20　31.05°N 121.92°E</span>
+  </div>
+
+  <div class="side">DEEP FIELD — FIRST RETURN</div>
+
+  <main class="core">
+    <div class="zh">深 场</div>
+    <h1 class="chrome">
+      <span class="ghost g1">DEEP FIELD</span>
+      <span class="ghost g2">DEEP FIELD</span>
+      DEEP FIELD
+      <small>134 亿年前的光</small>
+    </h1>
+    <p class="tagline">十二幅深空影像　·　一间暗房　·　<b>一次向外的回望</b></p>
+  </main>
+
+  <div class="bottom">
+    <div class="stats mono">
+      <div><b>12</b>FRAMES</div>
+      <div><b>7.7H</b>EXPOSURE</div>
+      <div><b>−58°</b>DECLINATION</div>
+      <div><b>3</b>HALL</div>
+    </div>
+    <a class="enter" href="#">ENTER THE DARK →</a>
+  </div>
+  <div class="grain"></div>
+</div>
+</body>
+</html>

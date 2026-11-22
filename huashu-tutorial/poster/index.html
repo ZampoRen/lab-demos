@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>深场 DEEP FIELD · 海报</title>
+<style>
+  :root{--bg:#030507;--ice:#9ff3ff;--steel:#cfd6dd;--dim:#7b8891}
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{background:#0a0b0d;display:flex;justify-content:center;font-family:"Helvetica Neue","PingFang SC",Arial,sans-serif}
+  .poster{position:relative;width:1080px;height:1440px;background:var(--bg);overflow:hidden;color:var(--steel)}
+  .frame{position:absolute;inset:26px;border:1px solid rgba(159,243,255,.22);z-index:6;pointer-events:none}
+  .frame::before,.frame::after{content:"";position:absolute;width:18px;height:18px;border:1px solid rgba(159,243,255,.6)}
+  .frame::before{left:-1px;top:-1px;border-right:0;border-bottom:0}
+  .frame::after{right:-1px;bottom:-1px;border-left:0;border-top:0}
+  .noise{position:absolute;inset:0;z-index:5;opacity:.22;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2'/></filter><rect width='160' height='160' filter='url(%23n)'/></svg>")}
+  .scan{position:absolute;inset:0;z-index:4;opacity:.2;
+    background:repeating-linear-gradient(0deg,rgba(0,0,0,.45) 0 1px,rgba(0,0,0,0) 1px 3px)}
+  .mono{font-family:"SF Mono",Menlo,monospace;font-size:12px;letter-spacing:.2em;color:rgba(159,243,255,.7)}
+  /* 顶部 */
+  .top{position:absolute;top:64px;left:64px;right:64px;display:flex;justify-content:space-between;z-index:7}
+  .top .org{font-size:12px;letter-spacing:.26em;color:#dfe7ee}
+  .top .org b{font-weight:600;color:#fff}
+  /* 标题区 */
+  .head{position:absolute;top:236px;left:64px;right:64px;z-index:7}
+  .kicker{font-size:12px;letter-spacing:.56em;color:var(--ice)}
+  .cn{font-family:"Songti SC","Times New Roman",serif;font-size:290px;line-height:.9;letter-spacing:.04em;margin-top:26px;
+    background:linear-gradient(176deg,#ffffff 2%,#cdd8e3 20%,#69757f 40%,#f2f8ff 52%,#8b98a4 64%,#232a31 86%,#e4eef8 100%);
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+    filter:drop-shadow(0 4px 30px rgba(159,243,255,.14))}
+  .en{font-size:26px;letter-spacing:.62em;color:#cfd8e0;margin-top:18px}
+  /* 图 */
+  .band{position:absolute;left:0;right:0;top:770px;height:400px;overflow:hidden}
+  .band img{width:100%;height:100%;object-fit:cover;object-position:center 42%;
+    filter:saturate(.4) contrast(1.3) brightness(.62) hue-rotate(166deg)}
+  .band .fade{position:absolute;inset:0;
+    background:linear-gradient(180deg,#030507 0%,rgba(3,5,7,0) 26%,rgba(3,5,7,0) 62%,#030507 100%),
+               linear-gradient(90deg,rgba(3,5,7,.75),rgba(3,5,7,0) 40%)}
+  .band .cap{position:absolute;left:64px;top:16px;font-family:"SF Mono",monospace;font-size:10px;
+    letter-spacing:.18em;color:rgba(207,214,221,.55)}
+  /* 底部 */
+  .bottom{position:absolute;left:64px;right:64px;bottom:74px;z-index:7}
+  .big{display:flex;align-items:flex-end;gap:18px}
+  .big b{font-size:150px;line-height:.78;font-weight:700;letter-spacing:-.04em;color:#f2f7fb}
+  .big span{font-size:14px;line-height:1.8;color:#a7b2ba;padding-bottom:8px}
+  .big span em{display:block;font-style:normal;font-size:10px;letter-spacing:.28em;color:var(--ice);margin-bottom:4px}
+  .rule{height:1px;background:rgba(159,243,255,.26);margin:34px 0 22px}
+  .rows{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;font-family:"SF Mono",monospace;
+    font-size:10px;letter-spacing:.12em;color:#7f8c95;line-height:2}
+  .rows b{display:block;color:#e7eef4;font-family:"Helvetica Neue",sans-serif;font-size:12.5px;letter-spacing:.04em;font-weight:500}
+  .cn-note{position:absolute;right:64px;top:236px;writing-mode:vertical-rl;font-family:"Songti SC",serif;
+    font-size:13px;letter-spacing:.5em;color:rgba(159,243,255,.55);z-index:7}
+</style>
+</head>
+<body>
+<div class="poster">
+  <div class="top">
+    <div class="org"><b>云间天文台</b>　YUNJIAN OBSERVATORY</div>
+    <div class="mono">NO. 001—012</div>
+  </div>
+
+  <div class="cn-note">一次向外的回望</div>
+
+  <div class="head">
+    <div class="kicker">深空影像展 / 第一回</div>
+    <div class="cn">深场</div>
+    <div class="en">DEEP FIELD</div>
+  </div>
+
+  <div class="band">
+    <img src="../assets/carina-large.jpg" alt="船底座星云">
+    <div class="fade"></div>
+    <div class="cap">CARINA NEBULA / NIRCam / 7.7H</div>
+  </div>
+
+  <div class="bottom">
+    <div class="big">
+      <b>134</b>
+      <span><em>亿年</em>最早一幅影像<br>所记录的光</span>
+    </div>
+    <div class="rule"></div>
+    <div class="rows">
+      <div><b>2027.03.21—06.20</b>周二至周日 10:00—21:00</div>
+      <div><b>临港 · 云间天文台 3 号展厅</b>环湖西三路 1 号</div>
+      <div><b>暗房 19:00 / 20:00</b>每场 40 分钟，需预约</div>
+    </div>
+  </div>
+
+  <div class="scan"></div><div class="noise"></div><div class="frame"></div>
+</div>
+</body>
+</html>
